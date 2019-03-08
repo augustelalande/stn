@@ -66,21 +66,3 @@ class GridSampler(tf.keras.Model):
         im_t = tf.reshape(im_t, [b, h, w, c])
         im_t = im_t / Wd
         return im_t
-
-
-if __name__ == '__main__':
-    tf.enable_eager_execution()
-
-    from grid_generator import GridGenerator
-
-    im = tf.ones([10, 64, 64, 3], dtype=tf.float32)
-    theta = tf.constant([[1, 0, 0, 0, 1, 0]], dtype=tf.float32)
-    theta = tf.tile(theta, [10, 1])
-
-    gg = GridGenerator()
-    grid = gg(im, theta)
-
-    gs = GridSampler()
-    im_t = gs(im, grid)
-
-    print(im_t.shape)

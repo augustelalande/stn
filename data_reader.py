@@ -37,14 +37,3 @@ class DataReader(object):
 
     def read(self, mode="train"):
         return self.data[mode].get_next()
-
-
-if __name__ == '__main__':
-    tf.enable_eager_execution()
-
-    data_reader = DataReader(32)
-    x, y = data_reader.read()
-    im = x[0, :, :, 0].numpy()
-    import cv2
-    cv2.imwrite("test.jpg", im * 255)
-    print(im, y[0])

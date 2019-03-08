@@ -28,16 +28,3 @@ class GridGenerator(tf.keras.Model):
 
         grid = tf.stack([x_t_flat, y_t_flat, ones])
         return grid
-
-
-if __name__ == '__main__':
-    tf.enable_eager_execution()
-
-    im = tf.ones([10, 64, 64, 3], dtype=tf.float32)
-    theta = tf.constant([[1, 0, 0, 0, 1, 0]], dtype=tf.float32)
-    theta = tf.tile(theta, [10, 1])
-
-    gg = GridGenerator()
-
-    grid = gg(im, theta)
-    print(grid.shape)

@@ -35,7 +35,7 @@ if __name__ == '__main__':
         # Train
 
         x, y = data_reader.read()
-        theta, x_t, o = model(x)
+        x_t, o = model(x)
 
         loss = tf.losses.softmax_cross_entropy(y, o)
         optimize = optimizer.minimize(loss, global_step=global_step)
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         # Valid
 
         x, y = data_reader.read("valid")
-        theta, x_t, o = model(x)
+        x_t, o = model(x)
 
         loss = tf.losses.softmax_cross_entropy(y, o)
         acc, acc_op = tf.metrics.accuracy(tf.argmax(y, -1), tf.argmax(o, -1))

@@ -1,23 +1,38 @@
 import tensorflow as tf
+from tensorflow.keras.layers import Conv2D, Dense
+from tensorflow.nn import relu
 
-from localisation_net import LocNet
-from grid_generator import GridGenerator
-from grid_sampler import GridSampler
-from classification_net import ClassNet
+from spatial_transformer import SpatialTransformer
 
 
 class SpatialTransformerNetwork(tf.keras.Model):
     def __init__(self):
         super().__init__()
-
-        self.loc = LocNet()
-        self.grid_gen = GridGenerator()
-        self.grid_sample = GridSampler()
+        self.transform = SpatialTransformer()
         self.classify = ClassNet()
 
-    def call(self, batch):
-        theta = self.loc(batch)
-        grid = self.grid_gen(batch, theta)
-        batch_t = self.grid_sample(batch, grid)
-        o = self.classify(batch_t)
-        return theta, batch_t, o
+    def call(self, x):
+        x_t = self.transform(x)
+        o = self.classify(x_t)
+        return x_t, o
+
+
+class ClassNet(tf.keras.Model):
+    def __init__(self):
+        super().__init__()
+        self.c1 = Conv2D(16, 3, activation=relu)
+        self.c2 = Conv2D(16, 3, activation=relu)
+        self.d1 = Dense(514, activation=relu)
+        self.d2 = Dense(10)
+
+    def call(self, x):
+        b, w, h, c = x.shape
+
+        x = self.c1(x)
+        x = self.c2(x)
+
+        x = tf.reshape(x, [b, -1])
+
+        x = self.d1(x)
+        x = self.d2(x)
+        return x

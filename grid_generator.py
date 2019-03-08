@@ -10,14 +10,15 @@ class GridGenerator(tf.keras.Model):
 
         theta = tf.reshape(theta, (-1, 2, 3))
 
-        grid = self._meshgrid(h, w)
+        grid = self._target_grid(h, w)
         grid = tf.expand_dims(grid, 0)
         grid = tf.tile(grid, [b, 1, 1])
 
         T = theta @ grid
-        return tf.reshape(T, [-1, 2, h, w])
+        T = tf.reshape(T, [-1, 2, h, w])
+        return tf.transpose(T, [0, 2, 3, 1])
 
-    def _meshgrid(self, height, width):
+    def _target_grid(self, height, width):
         x_t, y_t = tf.meshgrid(
             tf.linspace(-1.0, 1.0, width),
             tf.linspace(-1.0, 1.0, height)

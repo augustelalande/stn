@@ -6,22 +6,11 @@ class GridSampler(tf.keras.Model):
         super().__init__()
 
     def call(self, im, grid):
-        # b, h, w, c = im.shape
-        # h_f, w_f = tf.cast(h, tf.float32), tf.cast(w, tf.float32)
-        #
-        # grid_x = grid[:, 0]
-        # grid_y = grid[:, 1]
-        #
-        # grid_x = (grid_x + 1) * w_f / 2
-        # grid_y = (grid_y + 1) * h_f / 2
-        # warp = tf.stack([grid_x, grid_y], -1)
-        # return tf.contrib.resampler.resampler(im, warp)
-
         b, h, w, c = im.shape
         h_f, w_f = tf.cast(h, tf.float32), tf.cast(w, tf.float32)
 
-        grid_x = grid[:, 0]
-        grid_y = grid[:, 1]
+        grid_x = grid[:, :, :, 0]
+        grid_y = grid[:, :, :, 1]
 
         grid_x = (grid_x + 1) * w_f / 2
         grid_y = (grid_y + 1) * h_f / 2

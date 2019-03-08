@@ -11,7 +11,7 @@ class LocNet(tf.keras.Model):
         self.c2 = Conv2D(16, 3, activation=relu)
         self.d1 = Dense(514, activation=relu)
 
-        init = tf.constant_initializer([5, 0, 0, 0, 5, 0])
+        init = tf.constant_initializer([1, 0, 0, 0, 1, 0])
         self.d2 = Dense(6, activation=tf.tanh, bias_initializer=init)
 
     def call(self, x):

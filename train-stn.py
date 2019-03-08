@@ -32,23 +32,35 @@ if __name__ == '__main__':
 
     with summary.record_summaries_every_n_global_steps(50):
 
+        # Train
+
         x, y = data_reader.read()
         theta, x_t, o = model(x)
 
-        loss = tf.reduce_mean(
-            tf.nn.softmax_cross_entropy_with_logits_v2(logits=o, labels=y))
+        loss = tf.losses.softmax_cross_entropy(y, o)
         optimize = optimizer.minimize(loss, global_step=global_step)
 
-        acc, acc_op = tf.metrics.accuracy(
-            tf.argmax(y, -1),
-            tf.argmax(o, -1)
-        )
+        acc, acc_op = tf.metrics.accuracy(tf.argmax(y, -1), tf.argmax(o, -1))
 
         summary.scalar("loss", loss, family="train")
         summary.scalar("accuracy", acc_op, family="train")
 
         summary.image("image input", cast_im(x), max_images=3)
         summary.image("image transformed", cast_im(x_t), max_images=3)
+
+        # Valid
+
+        x, y = data_reader.read("valid")
+        theta, x_t, o = model(x)
+
+        loss = tf.losses.softmax_cross_entropy(y, o)
+        acc, acc_op = tf.metrics.accuracy(tf.argmax(y, -1), tf.argmax(o, -1))
+
+        summary.scalar("loss", loss, family="valid")
+        summary.scalar("accuracy", acc_op, family="valid")
+
+        summary.image("image input valid", cast_im(x), max_images=3)
+        summary.image("image transformed valid", cast_im(x_t), max_images=3)
 
     with tf.Session() as sess:
         tf.global_variables_initializer().run()

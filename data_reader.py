@@ -23,33 +23,20 @@ class DataReader(object):
         y_test = tf.squeeze(tf.one_hot(y_test, 10))
 
         self.data = {
-            "train": [
-                self._make_iterator(X_train, batch_size),
-                self._make_iterator(y_train, batch_size)
-            ],
-
-            "valid": [
-                self._make_iterator(X_valid, batch_size),
-                self._make_iterator(y_valid, batch_size)
-            ],
-
-            "test": [
-                self._make_iterator(X_test, batch_size),
-                self._make_iterator(y_test, batch_size)
-            ]
+            "train": self._make_iterator(X_train, y_train, batch_size),
+            "valid": self._make_iterator(X_valid, y_valid, batch_size),
+            "test": self._make_iterator(X_test, y_test, batch_size)
         }
 
-    def _make_iterator(self, data, batch_size, buffer_size=10000):
-        dataset = tf.data.Dataset.from_tensor_slices(data)
+    def _make_iterator(self, X, y, batch_size, buffer_size=10000):
+        dataset = tf.data.Dataset.from_tensor_slices((X, y))
         dataset = dataset.shuffle(buffer_size)
         dataset = dataset.batch(batch_size, True)
         dataset = dataset.repeat()
         return dataset.make_one_shot_iterator()
 
     def read(self, mode="train"):
-        x = self.data[mode][0].get_next()
-        y = self.data[mode][1].get_next()
-        return x, y
+        return self.data[mode].get_next()
 
 
 if __name__ == '__main__':
@@ -57,4 +44,7 @@ if __name__ == '__main__':
 
     data_reader = DataReader(32)
     x, y = data_reader.read()
-    print(x, y)
+    im = x[0, :, :, 0].numpy()
+    import cv2
+    cv2.imwrite("test.jpg", im * 255)
+    print(im, y[0])
